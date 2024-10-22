@@ -6,6 +6,7 @@ import com.mycompany.util.ValidationUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.Scanner;
 
@@ -18,6 +19,8 @@ public class Calculator {
 
         while (true) {
             try {
+                String num1Input = getValidatedInput(scanner, "Enter the first number: ");
+
                 String inputSymbol = getOperationInput(scanner);
 
                 if (inputSymbol.equalsIgnoreCase("exit")) {
@@ -29,7 +32,6 @@ public class Calculator {
                 Operation operation = optionalOperation.orElseThrow(() -> new InvalidOperationException(inputSymbol));
 
 
-                String num1Input = getValidatedInput(scanner, "Enter the first number: ");
                 String num2Input = getValidatedInput(scanner, "Enter the second number: ");
 
                 if (operation == Operation.DIVIDE && Double.parseDouble(num2Input) == 0) {
@@ -78,20 +80,13 @@ public class Calculator {
         }
     }
 
-    private static void performCalculation(Operation operation, String num1Input, String num2Input, String operationSymbol) {
-        if (ValidationUtil.isInteger(num1Input) && ValidationUtil.isInteger(num2Input)) {
-            int num1 = Integer.parseInt(num1Input);
-            int num2 = Integer.parseInt(num2Input);
-            int result = operation.apply(num1, num2);
-            System.out.printf("Result of %d %s %d = %d%n", num1, operationSymbol, num2, result);
-            LOGGER.info("Operation: {} {} {} = {}", num1, operationSymbol, num2, result);
-        } else {
-            double num1 = Double.parseDouble(num1Input);
-            double num2 = Double.parseDouble(num2Input);
-            double result = operation.apply(num1, num2);
-            System.out.printf("Result of %.2f %s %.2f = %.2f%n", num1, operationSymbol, num2, result);
-            LOGGER.info("Operation: {} {} {} = {}", num1, operationSymbol, num2, result);
-        }
+    private static BigDecimal performCalculation(Operation operation, String num1Input, String num2Input, String operationSymbol) {
+        BigDecimal num1 = new BigDecimal(num1Input);
+        BigDecimal num2 = new BigDecimal(num2Input);
+        BigDecimal result = operation.apply(num1, num2);
+        System.out.printf("Result of %s %s %s = %s%n", num1.toPlainString(), operationSymbol, num2.toPlainString(), result.toPlainString());
+        LOGGER.info("Operation: {} {} {} = {}", num1.toPlainString(), operationSymbol, num2.toPlainString(), result.toPlainString());
+        return result;
     }
 
 
