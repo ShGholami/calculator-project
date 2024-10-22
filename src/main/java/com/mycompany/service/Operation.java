@@ -1,30 +1,26 @@
 package com.mycompany.service;
 
-import java.util.function.DoubleBinaryOperator;
-import java.util.function.IntBinaryOperator;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.function.BiFunction;
 
 public enum Operation {
-    PLUS("+", (a, b) -> a + b, (a, b) -> a + b),
-    MINUS("-", (a, b) -> a - b, (a, b) -> a - b),
-    TIMES("*", (a, b) -> a * b, (a, b) -> a * b),
-    DIVIDE("/", (a, b) -> a / b, (a, b) -> a / b);
+    PLUS("+", BigDecimal::add),
+    MINUS("-", BigDecimal::subtract),
+    TIMES("*", BigDecimal::multiply),
+    DIVIDE("/", (x, y) -> x.divide(y, 10, RoundingMode.HALF_UP));
 
     private final String symbol;
-    private final DoubleBinaryOperator doubleOp;
-    private final IntBinaryOperator intOp;
+    private final BiFunction<BigDecimal, BigDecimal, BigDecimal> bigDecimalOperation;
 
-    Operation(String symbol, DoubleBinaryOperator doubleOp, IntBinaryOperator intOp) {
+
+    Operation(String symbol, BiFunction<BigDecimal, BigDecimal, BigDecimal> bigDecimalOperation) {
         this.symbol = symbol;
-        this.doubleOp = doubleOp;
-        this.intOp = intOp;
+        this.bigDecimalOperation = bigDecimalOperation;
     }
 
-    public double apply(double a, double b) {
-        return doubleOp.applyAsDouble(a, b);
-    }
-
-    public int apply(int a, int b) {
-        return intOp.applyAsInt(a, b);
+    public BigDecimal apply(BigDecimal x, BigDecimal y) {
+        return bigDecimalOperation.apply(x, y);
     }
 
     public String getSymbol() {
