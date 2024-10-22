@@ -10,17 +10,17 @@ import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.Scanner;
 
-public class Calculator {
+public class CalculatorApp {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Calculator.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CalculatorApp.class);
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
+        Calculator calculator = new Calculator();
 
         while (true) {
             try {
                 String num1Input = getValidatedInput(scanner, "Enter the first number: ");
-
                 String inputSymbol = getOperationInput(scanner);
 
                 if (inputSymbol.equalsIgnoreCase("exit")) {
@@ -28,17 +28,15 @@ public class Calculator {
                     break;
                 }
 
-                Optional<Operation> optionalOperation = getOperationFromSymbol(inputSymbol);
+                Optional<Operation> optionalOperation = calculator.getOperationFromSymbol(inputSymbol);
                 Operation operation = optionalOperation.orElseThrow(() -> new InvalidOperationException(inputSymbol));
 
-
                 String num2Input = getValidatedInput(scanner, "Enter the second number: ");
+                calculator.checkDivideByZero(operation, num2Input);
 
-                if (operation == Operation.DIVIDE && Double.parseDouble(num2Input) == 0) {
-                    throw new DivisionByZeroException();
-                }
-
-                performCalculation(operation, num1Input, num2Input, inputSymbol);
+                BigDecimal result = calculator.performCalculation(operation, num1Input, num2Input);
+                System.out.printf("Result of %s %s %s = %s%n", num1Input, inputSymbol, num2Input, result.toPlainString());
+                LOGGER.info("Operation: {} {} {} = {}", num1Input, inputSymbol, num2Input, result.toPlainString());
 
             } catch (InvalidOperationException | DivisionByZeroException e) {
                 LOGGER.error(e.getMessage());
@@ -58,15 +56,6 @@ public class Calculator {
         return scanner.nextLine();
     }
 
-    private static Optional<Operation> getOperationFromSymbol(String symbol) {
-        for (Operation op : Operation.values()) {
-            if (op.getSymbol().equals(symbol)) {
-                return Optional.of(op);
-            }
-        }
-        return Optional.empty();
-    }
-
     private static String getValidatedInput(Scanner scanner, String message) {
         System.out.println(message);
         String input;
@@ -78,14 +67,5 @@ public class Calculator {
                 System.out.println("Invalid input. Please enter a valid number:");
             }
         }
-    }
-
-    private static BigDecimal performCalculation(Operation operation, String num1Input, String num2Input, String operationSymbol) {
-        BigDecimal num1 = new BigDecimal(num1Input);
-        BigDecimal num2 = new BigDecimal(num2Input);
-        BigDecimal result = operation.apply(num1, num2);
-        System.out.printf("Result of %s %s %s = %s%n", num1.toPlainString(), operationSymbol, num2.toPlainString(), result.toPlainString());
-        LOGGER.info("Operation: {} {} {} = {}", num1.toPlainString(), operationSymbol, num2.toPlainString(), result.toPlainString());
-        return result;
     }
 }
