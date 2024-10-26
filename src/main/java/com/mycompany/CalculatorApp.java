@@ -1,7 +1,9 @@
-package com.mycompany.service;
+package com.mycompany;
 
 import com.mycompany.exception.DivisionByZeroException;
 import com.mycompany.exception.InvalidOperationException;
+import com.mycompany.service.Calculator;
+import com.mycompany.service.Operation;
 import com.mycompany.util.ValidationUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
