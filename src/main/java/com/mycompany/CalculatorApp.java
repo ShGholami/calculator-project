@@ -28,8 +28,7 @@ public class CalculatorApp {
             try {
                 String num1Input = userInterface.getInput("Enter the first number: ");
                 if (!ValidationUtil.isNumeric(num1Input)) {
-                    userInterface.displayOutput("Invalid input. Please enter a valid number.");
-                    continue;
+                    throw new NumberFormatException(num1Input);
                 }
 
                 String inputSymbol = userInterface.getInput("Enter operation (+, -, *, /) or type 'exit' to quit: ");
@@ -42,9 +41,8 @@ public class CalculatorApp {
                 Operation operation = optionalOperation.orElseThrow(() -> new InvalidOperationException(inputSymbol));
 
                 String num2Input = userInterface.getInput("Enter the second number: ");
-                if (!ValidationUtil.isNumeric(num1Input)) {
-                    userInterface.displayOutput("Invalid input. Please enter a valid number.");
-                    continue;
+                if (!ValidationUtil.isNumeric(num2Input)) {
+                    throw new NumberFormatException(num2Input);
                 }
 
                 calculator.checkDivideByZero(operation, num2Input);
@@ -58,8 +56,8 @@ public class CalculatorApp {
                 LOGGER.error(e.getMessage());
                 userInterface.displayOutput(e.getMessage());
             } catch (NumberFormatException e) {
-                LOGGER.error("Invalid number format", e);
-                userInterface.displayOutput("Please enter valid numbers.");
+                LOGGER.error("Invalid number format: {}", e.getMessage());
+                userInterface.displayOutput("Please enter a valid number.");
             } catch (Exception e) {
                 LOGGER.error("Unexpected error occurred", e);
                 userInterface.displayOutput("An unexpected error occurred. Please try again.");
