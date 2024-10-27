@@ -8,7 +8,7 @@ public enum Operation {
     PLUS("+", BigDecimal::add),
     MINUS("-", BigDecimal::subtract),
     TIMES("*", BigDecimal::multiply),
-    DIVIDE("/", (x, y) -> x.divide(y, 10, RoundingMode.HALF_UP));
+    DIVIDE("/", (x, y) -> x.divide(y, 2, RoundingMode.HALF_UP));
 
     private final String symbol;
     private final BiFunction<BigDecimal, BigDecimal, BigDecimal> bigDecimalOperation;
